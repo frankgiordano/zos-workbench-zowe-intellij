@@ -71,6 +71,13 @@ public final class ZoweToolWindowFactory implements ToolWindowFactory {
             new JTree(jobsModel);
     private final JBTextArea jobDetails =
             textArea(false);
+    private final JBScrollPane jobPreviewScroll =
+            new JBScrollPane(jobDetails);
+    private final JBSplitter jobsSplitter =
+            new JBSplitter(false, 0.35f);
+    private final JButton jobPreviewToggle =
+            new JButton();
+    private boolean jobPreviewExpanded;
 
     /*
      * Job search filters.
@@ -135,6 +142,13 @@ public final class ZoweToolWindowFactory implements ToolWindowFactory {
             new JTree(dsnModel);
     private final JBTextArea dsnDetails =
             textArea(false);
+    private final JBScrollPane dsnPreviewScroll =
+            new JBScrollPane(dsnDetails);
+    private final JBSplitter dsnSplitter =
+            new JBSplitter(false, 0.35f);
+    private final JButton dsnPreviewToggle =
+            new JButton();
+    private boolean dsnPreviewExpanded;
     private final ComboBox<String> dsnMask =
             new ComboBox<>();
 
@@ -623,26 +637,73 @@ public final class ZoweToolWindowFactory implements ToolWindowFactory {
                     }
                 });
 
-        JBSplitter splitter =
-                new JBSplitter(
-                        false,
-                        0.35f);
-
-        splitter.setFirstComponent(
+        jobsSplitter.setFirstComponent(
                 new JBScrollPane(jobsTree));
 
-        splitter.setSecondComponent(
-                new JBScrollPane(jobDetails));
+        /*
+         * The preview pane is collapsed by default. A thin toggle strip on the
+         * right edge expands/collapses it. Opening a spool expands it.
+         */
+        jobPreviewToggle.setMargin(new Insets(2, 2, 2, 2));
+        jobPreviewToggle.setFocusable(false);
+        jobPreviewToggle.addActionListener(
+                e -> setJobPreviewExpanded(!jobPreviewExpanded));
+
+        JPanel previewStrip =
+                new JPanel(new BorderLayout());
+        previewStrip.add(jobPreviewToggle, BorderLayout.NORTH);
+
+        setJobPreviewExpanded(false);
+
+        JPanel center =
+                new JPanel(new BorderLayout());
+        center.add(jobsSplitter, BorderLayout.CENTER);
+        center.add(previewStrip, BorderLayout.EAST);
 
         panel.add(
                 north,
                 BorderLayout.NORTH);
 
         panel.add(
-                splitter,
+                center,
                 BorderLayout.CENTER);
 
         return panel;
+    }
+
+    /** Flat, borderless icon button used to expand/close a preview pane. */
+    private static void styleToggle(JButton button, boolean expanded) {
+
+        button.setIcon(AllIcons.Actions.PreviewDetails);
+        button.setText(null);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setMargin(new Insets(0, 0, 0, 0));
+        button.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
+        // The IDE button UI enforces a minimum width; pin the size to the icon.
+        Dimension size = new Dimension(
+                AllIcons.Actions.PreviewDetails.getIconWidth() + 4,
+                AllIcons.Actions.PreviewDetails.getIconHeight() + 4);
+        button.setPreferredSize(size);
+        button.setMinimumSize(size);
+        button.setMaximumSize(size);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setToolTipText(
+                expanded ? "Close preview" : "Expand preview");
+    }
+
+    private void setJobPreviewExpanded(boolean expanded) {
+
+        jobPreviewExpanded = expanded;
+
+        jobsSplitter.setSecondComponent(
+                expanded ? jobPreviewScroll : null);
+
+        styleToggle(jobPreviewToggle, expanded);
+
+        jobsSplitter.revalidate();
+        jobsSplitter.repaint();
     }
 
     /**
@@ -1254,6 +1315,8 @@ public final class ZoweToolWindowFactory implements ToolWindowFactory {
 
                 jobDetails.setCaretPosition(0);
 
+                setJobPreviewExpanded(true);
+
                 setState(
                         "Loaded spool content.");
             });
@@ -1820,26 +1883,48 @@ public final class ZoweToolWindowFactory implements ToolWindowFactory {
                     }
                 });
 
-        JBSplitter splitter =
-                new JBSplitter(
-                        false,
-                        0.35f);
-
-        splitter.setFirstComponent(
+        dsnSplitter.setFirstComponent(
                 new JBScrollPane(dsnTree));
 
-        splitter.setSecondComponent(
-                new JBScrollPane(dsnDetails));
+        /* Preview pane is collapsed by default; toggle strip on the right edge. */
+        dsnPreviewToggle.setMargin(new Insets(2, 2, 2, 2));
+        dsnPreviewToggle.setFocusable(false);
+        dsnPreviewToggle.addActionListener(
+                e -> setDsnPreviewExpanded(!dsnPreviewExpanded));
+
+        JPanel previewStrip =
+                new JPanel(new BorderLayout());
+        previewStrip.add(dsnPreviewToggle, BorderLayout.NORTH);
+
+        setDsnPreviewExpanded(false);
+
+        JPanel center =
+                new JPanel(new BorderLayout());
+        center.add(dsnSplitter, BorderLayout.CENTER);
+        center.add(previewStrip, BorderLayout.EAST);
 
         panel.add(
                 toolbar,
                 BorderLayout.NORTH);
 
         panel.add(
-                splitter,
+                center,
                 BorderLayout.CENTER);
 
         return panel;
+    }
+
+    private void setDsnPreviewExpanded(boolean expanded) {
+
+        dsnPreviewExpanded = expanded;
+
+        dsnSplitter.setSecondComponent(
+                expanded ? dsnPreviewScroll : null);
+
+        styleToggle(dsnPreviewToggle, expanded);
+
+        dsnSplitter.revalidate();
+        dsnSplitter.repaint();
     }
 
     /**
@@ -3767,9 +3852,15 @@ public final class ZoweToolWindowFactory implements ToolWindowFactory {
 
         sshInput.setText("");
 
+        String cwd =
+                commandService()
+                        .getUssCwd();
+
         appendTerminal(
                 sshOutput,
-                "USS$ "
+                "USS"
+                        + (cwd == null ? "" : " " + cwd)
+                        + "$ "
                         + command
                         + "\n");
 

@@ -18,6 +18,12 @@
       </ul>
     ]]></description>
     <change-notes><![CDATA[
+      <h4>v1.0.4</h4>
+      <ul>
+          <li><b>Collapsible Preview Panes</b>: The detail preview pane on the Jobs and Data Sets tabs is now collapsed by default and can be expanded or closed with a compact toggle icon on its right edge. Opening a spool (<i>Open Spool</i> button or double-click) automatically expands the preview.</li>
+          <li><b>MVS Console Line Breaks</b>: Console command output is now split into proper lines using the SDK's <code>ConsoleCmdInputData.setProcessResponse()</code> option instead of appearing on a single line.</li>
+          <li><b>USS SSH Terminal Improvements</b>: Error output (stderr) is now captured and displayed, and <code>cd</code> now persists between commands. The terminal prompt shows the current directory, and a failed <code>cd</code> leaves the directory unchanged.</li>
+      </ul>
       <h4>v1.0.3</h4>
       <ul>
           <li><b>Plugin Renaming</b>: Renamed plugin to <b>z/OS Workbench for Zowe</b> and updated tool window sidebar title to <b>z/OS Workbench</b>.</li>
@@ -53,3 +59,5 @@
         <applicationService serviceImplementation="org.zowe.explorerjava.ZoweConnectionSettings"/>
     </extensions>
 </idea-plugin>
+
+
