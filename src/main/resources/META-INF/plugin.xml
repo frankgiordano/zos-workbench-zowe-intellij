@@ -3,7 +3,7 @@
     <name>z/OS Workbench for Zowe</name>
     <vendor url="https://github.com/frankgiordano/zowe-explorer-java-intellij-sdk">Frank Giordano</vendor>
     <description><![CDATA[
-      <h3>Lightweight z/OS Explorer for IntelliJ IDEA powered by Zowe Client Java SDK</h3>
+      <h3>Lightweight z/OS Workbench for IntelliJ IDEA powered by Zowe Client Java SDK</h3>
       <p>Connect seamlessly to IBM z/OS mainframes directly from IntelliJ IDEA to manage Data Sets, Unix System Services (USS) files, JES Jobs, TSO commands, and MVS consoles.</p>
 
       <h4>Key Features</h4>
