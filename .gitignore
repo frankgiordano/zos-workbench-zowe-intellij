@@ -5,5 +5,5 @@ build/
 out/
 build.gradle.kts
 .intellijPlatform/
-
+bin/
 

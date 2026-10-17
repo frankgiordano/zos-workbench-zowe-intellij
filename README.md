@@ -1,4 +1,4 @@
-# z/OS Workbench for Zowe  
+# z/OS Workbench for Zowe
 
 A lightweight z/OS plugin for IntelliJ IDEA powered by the [**Zowe Client Java SDK**](https://github.com/zowe/zowe-client-java-sdk).
 
@@ -66,7 +66,7 @@ The plugin is also an experimental platform for exploring different design choic
     - **Cancel Job**: Right-click active/queued job -> `Cancel Job` to cancel or stop running jobs using `JobCancel`.
     - **Purge Job**: Right-click completed (`OUTPUT`) job -> `Purge Job` to delete and purge job output spool files on z/OS using `JobDelete`.
 - **Spool Output & Workflows**:
-    - **Double-Click Workflows**: Double-clicking a job automatically fetches and expands its spool files; double-clicking a spool file opens its content directly in the details viewer.
+    - **Double-Click Workflows**: Double-clicking a job automatically fetches and expands its spool files; double-clicking a spool file (or clicking **Open Spool**) opens its content in the details viewer and expands the preview pane.
     - **Right-Click Context Menu & Main Editor Integration**:
         - Right-click spool file -> **Open in Main Editor** (or toolbar button **Open in Editor**): Opens the spool output in a full IntelliJ editor tab as a remote file (`zowe-spool://`).
         - Right-click spool file -> **Download Spool As...**: Downloads the spool output to the local file system.
@@ -89,12 +89,15 @@ The plugin is also an experimental platform for exploring different design choic
 
 ### 💻 Commands & Terminals
 - **Stateful TSO Terminal**: Issue stateful TSO commands (`TsoStart`, `TsoCmd.issueCommandByTsoSessionId`, `TsoStop`) reusing a single TSO address space across commands.
-- **MVS Console**: Execute MVS console commands using `ConsoleCmd`.
+- **MVS Console**: Execute MVS console commands using `ConsoleCmd`. Output is parsed into proper lines via `ConsoleCmdInputData.setProcessResponse()`.
 - **USS SSH Terminal**: Execute remote SSH commands on z/OS Unix System Services using `UssCmd` with host-key verification (`~/.ssh/known_hosts`).
+    - **Persistent working directory**: `cd` carries over between commands and the prompt shows the current directory (e.g. `USS /u/users/me$`). A failed `cd` leaves the directory unchanged.
+    - **Error output**: stderr is merged into the output, so messages like `EDC5129I No such file or directory` are shown.
 
 ### 🎨 Responsive UI & Layout Customization
 - **Wrapping Toolbars**: Custom `WrapLayout` implementation across all toolbars (**Jobs**, **Data Sets**, **USS**, **Commands**, and **Connection Manager**), allowing action buttons and filter inputs to wrap onto new lines automatically when narrowing tool window splitters or panes.
 - **Line-Wrapped Detail Views**: Detail view text areas feature word-wrapping (`setLineWrap(true)`, `setWrapStyleWord(true)`), preventing long job details, spool outputs, dataset metadata, and command outputs from clipping or disappearing.
+- **Collapsible Preview Panes**: The detail preview on the **Jobs** and **Data Sets** tabs is collapsed by default and toggled with a compact icon on its right edge. Opening a spool (**Open Spool** button or double-click) expands it automatically.
 - **Tree Node Tooltips**: Integrated tooltips on tree controls (`jobsTree`, `dsnTree`, `ussTree`) to display full item names when hovering over truncated nodes.
 
 ### 💾 Remote Editor Integration & Concurrency Protection
@@ -156,7 +159,7 @@ gradlew buildPlugin
 The compiled plugin package ZIP will be located in:
 
 ```text
-build/distributions/com.frankgiordano.zowe.explorer.java-1.0.3.zip
+build/distributions/com.frankgiordano.zowe.explorer.java-1.0.4.zip
 ```
 
 To install locally in IntelliJ:
@@ -174,7 +177,7 @@ To install locally in IntelliJ:
    ```bash
    gradlew buildPlugin
    ```
-   Verify that the output package `build/distributions/com.frankgiordano.zowe.explorer.java-1.0.3.zip` exists.
+   Verify that the output package `build/distributions/com.frankgiordano.zowe.explorer.java-1.0.4.zip` exists.
 
 2. **Verify Plugin Compatibility**:
    ```bash
@@ -218,3 +221,4 @@ You can publish directly from the command line or CI/CD pipelines using the JetB
 ## License & Credits
 
 Powered by [Zowe Client Java SDK](https://github.com/zowe/zowe-client-java-sdk). Developed by Frank Giordano.
+  
